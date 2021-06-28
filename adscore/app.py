@@ -24,8 +24,8 @@ def create_app(**config):
 
     app.url_map.strict_slashes = False
 
-    if app.config['MINIFY']:
-        minify(app=app, html=True, js=True, cssless=True, cache=False, fail_safe=True, bypass=[])
+    if app.config['MINIFY'] and app.config['ENVIRONMENT'] != "localhost":
+        minify(app=app, html=True, js=True, cssless=True, caching_limit=0, fail_safe=True, bypass=[])
     
     Limiter(app, key_func=get_remote_address)
     FlaskRedisPool(app)
