@@ -76,13 +76,13 @@ def before_request():
         evaluation = crawlers.evaluate(remote_ip, user_agent)
         if evaluation == crawlers.VERIFIED_BOT:
             # Extremely high rate limit
-            RequestsManager.init(auth={'access_token': app.config['VERIFIED_BOTS_ACCESS_TOKEN'], 'expire_in': "2050-01-01T00:00:00", 'bot': True}, cookies={})
+            RequestsManager.init(auth={'access_token': app.config['VERIFIED_BOTS_ACCESS_TOKEN'], 'expires_at': "16725225600", 'bot': True}, cookies={})
         elif evaluation == crawlers.UNVERIFIABLE_BOT:
             # Slightly higher rate limit
-            RequestsManager.init(auth={'access_token': app.config['UNVERIFIABLE_BOTS_ACCESS_TOKEN'], 'expire_in': "2050-01-01T00:00:00", 'bot': True}, cookies={})
+            RequestsManager.init(auth={'access_token': app.config['UNVERIFIABLE_BOTS_ACCESS_TOKEN'], 'expires_at': "16725225600", 'bot': True}, cookies={})
         elif evaluation == crawlers.POTENTIAL_MALICIOUS_BOT:
             # Rate limits as a regular user with the advantage that there is no bootstrap
-            RequestsManager.init(auth={'access_token': app.config['MALICIOUS_BOTS_ACCESS_TOKEN'], 'expire_in': "2050-01-01T00:00:00", 'bot': True}, cookies={})
+            RequestsManager.init(auth={'access_token': app.config['MALICIOUS_BOTS_ACCESS_TOKEN'], 'expires_at': "16725225600", 'bot': True}, cookies={})
 
     if not RequestsManager.is_initialized():
         if request.cookies.get('session'):
@@ -115,7 +115,7 @@ def ratelimit_handler(e):
     if e.description.endswith('per 1 day'):
         # ADS Core limit hit (to limit too many bootstraps)
         remote_ip = get_remote_address()
-        description = "We have received too many requests from your IP ({}).".format(remote_ip)
+        description = "We have received too many requests from your IP ({}) for the current 24 hour period. Please try again later.".format(remote_ip)
     else:
         # API ratelimit hit
         description = e.description
