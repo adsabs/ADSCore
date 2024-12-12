@@ -351,5 +351,65 @@
     })();
   </script>
   {% endif %}
+
+  <!-- Add Sentry SDK -->
+  <script src="https://js.sentry-cdn.com/46062cbe0aeb7a3b2bb4c3a9b8cd1ac7.min.js" crossorigin="anonymous"></script>
+  <script>
+    // Set the environment variable
+    window.process = { env: { NODE_ENV: window.ENV ?? 'production' } };
+
+    window.getSentry = (cb, errCb) => {
+      if (typeof errCb === 'function') {
+        errCb.call(null, new Error('Failed to get Sentry'));
+      }
+    };
+
+    window.sentryOnLoad = function() {
+      try {
+        Sentry.init({
+          dsn: 'https://46062cbe0aeb7a3b2bb4c3a9b8cd1ac7@o1060269.ingest.us.sentry.io/4507341192036352',
+
+          // Performance Monitoring
+          tracesSampleRate: window.ENV === 'development' ? 1.0 : 0.75,
+
+          // Session Replay
+          replaysSessionSampleRate: window.ENV === 'development' ? 1.0 : 0.1,
+          replaysOnErrorSampleRate: 1.0,
+          environment: window.ENV ?? 'production',
+          integrations: [
+            Sentry.browserTracingIntegration(),
+            Sentry.replayIntegration({
+              maskAllText: false,
+              blockAllMedia: false,
+              unmask: ['[name=q]'],
+            }),
+          ],
+          tracePropagationTargets: [
+            'localhost',
+            'https://ui.adsabs.harvard.edu',
+            'https://devui.adsabs.harvard.edu',
+            'https://qa.adsabs.harvard.edu',
+          ],
+        });
+      } catch (e) {
+        console.error('Could not initialize Sentry', e);
+      }
+    };
+
+    window.getSentry = function(cb, errCb = () => {}) {
+      try {
+        if (!window.Sentry) {
+          throw new Error('Sentry not found');
+        }
+        return cb.call(window, Sentry);
+      } catch (e) {
+        console.warn('unable to run sentry callback', e);
+        if (typeof errCb === 'function') {
+          errCb.call(window, e);
+        }
+      }
+    };
+  </script>
+  <!-- END Add Sentry SDK -->
 </body>
 </html>
