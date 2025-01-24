@@ -95,7 +95,7 @@ class RequestsManager:
             except (ConnectionError, ConnectTimeout, ReadTimeout) as e:
                 current_app.logger.exception("Exception while connecting to microservice {}".format(endpoint))
                 if retry_counter == 0:
-                    current_app.logger.info("Re-trying connection to microservice {}".format(endpoint)
+                    current_app.logger.info("Re-trying connection to microservice {}".format(endpoint))
                     return self.request(endpoint, params, method=method, headers=headers, retry_counter=retry_counter+1, json_format=json_format)
                 else:
                     abort(502)
