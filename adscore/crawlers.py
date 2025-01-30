@@ -121,7 +121,7 @@ def evaluate(remote_ip, user_agent):
     - A verified bot
     - An unverifiable bot
     - A potentially malicious bot
-    - A potential legitivate user
+    - A potential legitimate user
     """
     if user_agent is None:
         user_agent = ""
